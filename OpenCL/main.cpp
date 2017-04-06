@@ -143,9 +143,10 @@ int main(int argc, char *argv[]) {
 	// TODO: Insert code here
 	size_t local, global;
 	cl_int err;
-
-	global = ceil(inputLength/(float)local)*local;
+	
 	local = 64;
+	global = ceil(inputLength/(float)local)*local;
+	
 
 	clGetPlatformIDs(1, &cpPlatform, NULL);
 	clGetDeviceIDs(cpPlatform, CL_DEVICE_TYPE_GPU, 1, &device_id,NULL);
@@ -158,12 +159,14 @@ int main(int argc, char *argv[]) {
 
 	kernel = clCreateKernel(program, "vecAdd", &err);
 
-	clEnqueueWriteBuffer(queue, deviceInput1, CL_TRUE, 0, inputLengthBytes, hostInput1, 0, NULL, NULL);
-	clEnqueueWriteBuffer(queue, deviceInput2, CL_TRUE, 0, inputLengthBytes, hostInput2, 0, NULL, NULL);
-
+	
 	deviceInput1 = clCreateBuffer(context, CL_MEM_READ_ONLY, inputLengthBytes, NULL, NULL);
 	deviceInput2 = clCreateBuffer(context, CL_MEM_READ_ONLY, inputLengthBytes, NULL, NULL);
 	deviceOutput = clCreateBuffer(context, CL_MEM_WRITE_ONLY, inputLengthBytes, NULL, NULL);
+	
+	clEnqueueWriteBuffer(queue, deviceInput1, CL_TRUE, 0, inputLengthBytes, hostInput1, 0, NULL, NULL);
+	clEnqueueWriteBuffer(queue, deviceInput2, CL_TRUE, 0, inputLengthBytes, hostInput2, 0, NULL, NULL);
+
 
 	clSetKernelArg(kernel, 0, sizeof(cl_mem), &deviceInput1);
 	clSetKernelArg(kernel, 1, sizeof(cl_mem), &deviceInput2);
